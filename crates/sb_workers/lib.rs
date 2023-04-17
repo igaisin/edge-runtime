@@ -12,7 +12,7 @@ use hyper::header::{HeaderName, HeaderValue};
 use hyper::{Body, Request, Response};
 use sb_worker_context::essentials::{
     CreateUserWorkerResult, EdgeContextInitOpts, EdgeContextOpts, EdgeUserRuntimeOpts,
-    UserWorkerMsgs, UserWorkerOptions,
+    UserWorkerMsgs,
 };
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -82,7 +82,7 @@ pub async fn op_user_worker_create(
             }),
         };
 
-        tx.send(UserWorkerMsgs::Create(user_worker_options, result_tx));
+        tx.send(UserWorkerMsgs::Create(user_worker_options, result_tx))?;
         result_rx
     };
 

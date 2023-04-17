@@ -4,11 +4,10 @@ use hyper::{Body, Request, Response};
 use log::error;
 use sb_worker_context::essentials::{
     CreateUserWorkerResult, EdgeContextInitOpts, EdgeContextOpts, EdgeMainRuntimeOpts,
-    UserWorkerMsgs, UserWorkerOptions,
+    UserWorkerMsgs,
 };
 use std::collections::HashMap;
 use std::path::Path;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 use tokio::net::UnixStream;
@@ -39,7 +38,7 @@ impl WorkerContext {
                 .unwrap();
             let local = tokio::task::LocalSet::new();
 
-            let handle: Result<(), Error> = local.block_on(&runtime, async {
+            let _handle: Result<(), Error> = local.block_on(&runtime, async {
                 let worker = EdgeRuntime::new(conf)?;
 
                 // start the worker
@@ -119,9 +118,11 @@ impl WorkerPool {
                                 Arc::new(RwLock::new(user_worker_ctx.unwrap())),
                             );
 
-                            tx.send(Ok(CreateUserWorkerResult { key }));
+                            // TODO: handle channel errors
+                            let _ = tx.send(Ok(CreateUserWorkerResult { key }));
                         } else {
-                            tx.send(Err(user_worker_ctx.unwrap_err()));
+                            // TODO: handle channel errors
+                            let _ = tx.send(Err(user_worker_ctx.unwrap_err()));
                         }
                     }
                     Some(UserWorkerMsgs::SendRequest(key, req, tx)) => {
